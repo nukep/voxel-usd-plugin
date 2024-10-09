@@ -1,0 +1,3 @@
+option('dcc', type : 'combo', choices : ['standalone', 'houdini', 'maya'], value : 'standalone')
+option('houdiniPath', type : 'string', value : '/opt/hfs20.5')
+option('mayaUsdPath', type : 'string', value: '/usr/autodesk/mayausd/maya2025/0.29.0_202406120659-f8eb6c1/mayausd/USD')
