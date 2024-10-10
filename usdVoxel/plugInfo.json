@@ -16,6 +16,20 @@
                         "supportsEditing": false,
                         "supportsWriting": false,
                         "target": "usd"
+                    },
+                    "UsdVoxelVoxFileFormat": {
+                        "bases": [
+                            "SdfFileFormat"
+                        ],
+                        "displayName": "VOX voxel format",
+                        "extensions": [
+                            "vox"
+                        ],
+                        "formatId": "vox",
+                        "primary": true,
+                        "supportsEditing": false,
+                        "supportsWriting": false,
+                        "target": "usd"
                     }
                 }
             },

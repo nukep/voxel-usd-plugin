@@ -3,7 +3,8 @@ USD_PLUGINS += [{
     'name' : 'usdVoxel',
 
     'sources': files(
-        'UsdVoxelKvxFileFormat.cpp', 'kvx.h'
+        'UsdVoxelKvxFileFormat.cpp', 'kvx.h',
+        'UsdVoxelVoxFileFormat.cpp', 'SdfMagicaVoxel.cpp', 'ogt_vox.cpp', 'ogt_vox.h',
     ),
     'plugInfo': files('plugInfo.json'),
 
