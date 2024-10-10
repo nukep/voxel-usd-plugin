@@ -6,6 +6,7 @@
 #include "pxr/base/vt/types.h"
 #include "pxr/usd/pcp/dynamicFileFormatDependencyData.h"
 #include "pxr/usd/pcp/dynamicFileFormatInterface.h"
+#include "pxr/usd/sdf/path.h"
 #include "pxr/usd/sdf/reference.h"
 #include "pxr/usd/sdf/abstractData.h"
 #include "pxr/usd/sdf/fileFormat.h"
@@ -91,9 +92,17 @@ static SdfPrimSpecHandle createGroup(const ogt_vox_scene *scene, SdfLayerHandle 
     const ogt_vox_group *group = &scene->groups[group_id];
     auto parentPrim = createGroup(scene, lyr, groupPrims, group->parent_group_index);
     auto parentPath = parentPrim->GetPath();
-    char pathc[64];
-    snprintf(pathc, sizeof(pathc), "group%lu", group_id);
-    auto path = parentPath.AppendChild(TfToken(pathc));
+
+    SdfPath path;
+    if (group->parent_group_index == k_invalid_group_index) {
+        // assume this is the root
+        // TODO: is this always the case?
+        path = SdfPath("/root");
+    } else {
+        char pathc[64];
+        snprintf(pathc, sizeof(pathc), "group%lu", group_id);
+        path = parentPath.AppendChild(TfToken(pathc));
+    }
     auto prim = SdfCreatePrimInLayer(lyr, path);
     prim->SetSpecifier(SdfSpecifierDef);
     prim->SetTypeName("Xform");
@@ -161,6 +170,9 @@ static bool MagicavoxelRead_impl(const ogt_vox_scene *scene, SdfLayerHandle lyr)
     for (uint32_t i = 0; i < scene->num_groups; i++) {
         createGroup(scene, lyr, groupPrims, i);
     }
+
+    lyr->SetDefaultPrim(TfToken("root"));
+
     return true;
 }
 

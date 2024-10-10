@@ -2,7 +2,9 @@
 #define __CUBE_PLACERS_H__
 
 #include "pxr/base/gf/vec3f.h"
+#include "pxr/base/gf/vec3h.h"
 #include "pxr/base/tf/token.h"
+#include "pxr/base/vt/types.h"
 #include "pxr/usd/sdf/layer.h"
 #include "pxr/usd/sdf/primSpec.h"
 #include "pxr/usd/sdf/attributeSpec.h"
@@ -16,6 +18,7 @@ class SdfMeshCubePlacer {
     pxr::VtIntArray faceVertexIndices;
     pxr::VtIntArray faceVertexCounts;
     pxr::VtVec3fArray displayColor;
+    pxr::VtVec3fArray normals;
 
     int currentLevel;
     float xcentroid, ycentroid, zcentroid;
@@ -97,6 +100,14 @@ public:
             {6,7,3,2},  // top
             {0,1,5,4}   // bottom
         };
+        static const GfVec3f sideNormals[] = {
+            GfVec3f(-1,0,0),
+            GfVec3f(1,0,0),
+            GfVec3f(0,0,-1),
+            GfVec3f(0,0,1),
+            GfVec3f(0,1,0),
+            GfVec3f(0,-1,0),
+        };
 
         for (int j = 0; j < 6; j++) {
             int sidemask = 1<<j;
@@ -108,6 +119,7 @@ public:
             }
             faceVertexCounts.push_back(4);
             displayColor.push_back(GfVec3f(r, g, b));
+            normals.push_back(sideNormals[j]);
         }
     }
     pxr::SdfPrimSpecHandle writePrim(pxr::SdfLayerHandle layer, pxr::SdfPath path) {
@@ -116,6 +128,12 @@ public:
         auto primspec = SdfCreatePrimInLayer(layer, path);
         primspec->SetSpecifier(SdfSpecifierDef);
         primspec->SetTypeName("Mesh");
+
+        auto subd_attr = SdfAttributeSpec::New(primspec, "subdivisionScheme", SdfValueTypeNames->Token);
+        subd_attr->SetDefaultValue(VtValue(TfToken("none")));
+        auto normals_attr = SdfAttributeSpec::New(primspec, "normals", SdfValueTypeNames->Normal3fArray);
+        normals_attr->SetDefaultValue(VtValue(normals));
+        normals_attr->SetField(TfToken("interpolation"), TfToken("uniform"));
 
         auto fvi_attr = SdfAttributeSpec::New(primspec, "faceVertexIndices", SdfValueTypeNames->IntArray);
         auto fvc_attr = SdfAttributeSpec::New(primspec, "faceVertexCounts", SdfValueTypeNames->IntArray);
