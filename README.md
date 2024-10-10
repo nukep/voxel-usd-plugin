@@ -2,6 +2,10 @@
 
 A USD file format plugin for reading voxel models. MagicaVoxel (.vox) and slab6 (.kvx) are currently implemented.
 
+![](./images/demo1.png)
+
+![](./images/demo2.png)
+
 ## Goals
 
 - [x] Build for Houdini
